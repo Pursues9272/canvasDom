@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDN video</title>
+    <style>
+        body {
+          background: black;
+          color:#CCCCCC;
+        }
+        .box-canvas {
+            width: 100%;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-around;
+          align-items: center;
+        }
+        .box-video {
+          width: 100%;
+          height: 200px;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-around;
+          align-items: center;
+        }
+        #canvas1 {
+          background: url(./image/im.png) no-repeat;
+          background-size: contain;
+          background-position:center;
+          border-radius: 4px;
+          box-sizing: border-box;
+        }
+        #canvas2 {
+          background: url(./image/im.png) no-repeat;
+          background-size: contain;
+          background-position:center;
+          background-color: #CCCCCC;
+          border-radius: 4px;
+          box-sizing: border-box;
+        }
+        video {
+          width: 400px;
+          height: 300px;
+          object-fit: contain;
+          margin: 10px 0;
+          box-sizing: border-box;
+        }
+    </style>
+    <script src="./js/CanvasRecorder.js"></script>
+</head>
+<body>
+<div class="box-canvas">
+    <canvas id="canvas1" width=400 height=300></canvas>
+    <canvas id="canvas2" width=400 height=300></canvas>
+</div>
+<div class="box-video">
+    <video src="./video/movie1.mp4"  controls></video>
+    <video id="video" src="./video/movie5.mp4" controls></video>
+    <video src="./video/movie3.mp4" controls></video>
+    <video src="./video/movie4.mp4" controls></video>
+</div>
+    <script>
+    let video = document.getElementById('video');
+    const canvas1 = document.getElementById('canvas1');
+    const canvas2 = document.getElementById('canvas2');
+    const recorder = new CanvasRecorder(canvas1);
+    let ctx1 = canvas1.getContext('2d');
+    let ctx2 = canvas2.getContext('2d');
+    video.addEventListener('play', function(){
+      console.log("开始播放")
+      setInterval(function(){
+          ctx1.drawImage(video, 0, 50, 400, 225);
+          ctx1.putImageData(dealCanvas(),0,50)
+        })
+    })
+    let CHECK_R;// = 30;
+      let CHECK_G;// = 150;
+      let CHECK_B;// = 35;
+      let CHECK_A;// = 35;
+      let TOLERANCE = 55
+      function dealCanvas() {
+          var frameData = ctx1.getImageData(0,50,400,225)
+        console.log("frameData=>",frameData)
+          var len = frameData.data.length/ 4;
+          for ( var i = 0; i < len; i++) {
+               var r = frameData.data[i * 4 + 0],
+                  g = frameData.data[i * 4 + 1],
+                  b = frameData.data[i * 4 + 2],
+                  a = 0;
+              if (CHECK_R == undefined){
+                  CHECK_R = r;
+                  CHECK_G = g;
+                  CHECK_B = b;
+                  CHECK_A = a;
+              }
+              if (  Math.abs(r - CHECK_R) <= TOLERANCE
+                  && Math.abs(g - CHECK_G) <= TOLERANCE
+                  && Math.abs(b - CHECK_B) <= TOLERANCE) {
+                  frameData.data[i * 4 + 3] = 0;
+              }
+          }
+          return frameData
+        }
+    video.addEventListener('ended', function(){
+      console.log("播放停止")
+    })
+
+</script>
+<script>
+    /* 
+    属性
+    autoplay   Boolean  自动播放
+    autopictureinpicture    Boolean  页面切换时开启画中画模式
+    controls 控制面板
+    controlslist    选择在控制面板上显示哪些控件
+    值: 
+    nodownload    播放速度/画中画
+    nofullscreen     下载/播放速度/画中画+全屏禁用
+    noremoteplayback    全部开启
+
+    
+    crossorigin    是否跨域
+    值:
+    anonymous    发送跨域请求时不携带凭证（credential）信息
+    use-credentials    在发送跨域请求时携带凭证（credential）信息。
+
+    disablepictureinpicture    防止自动请求画中画模式
+    disableRemotePlayback    禁止远程播放功能
+    height   视频显示区域的高度
+    width    视频显示区域的宽度
+    loop     循环播放
+    muted    Boolean 是否静音
+    poster    海报帧图片url    默认第一帧
+    playsinline    Boolean 视频将内联（inline）播放，即在元素的播放区域内
+    preload     提示游览器
+    值：
+    none 不应该预加载视频
+    metadata 仅预先获取视频的元数据
+    auto 下载整个视频文件，即使用户不希望使用它。
+    空字符串    值为 auto 一致
+    每个浏览器的默认值都不相同，即使规范建议设置为 metadata。
+
+    src   嵌入到页面的视频的URL 
+    也可以使用 video 块内的 <source> 元素来指定需要嵌到页面的视频。
+    */
+
+</script>
+</body>
+</html>
